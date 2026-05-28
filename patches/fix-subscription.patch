@@ -2,7 +2,7 @@ diff --git a/src/plus/gk/utils/subscription.utils.ts b/src/plus/gk/utils/subscri
 index 82a75beec..266649ec2 100644
 --- a/src/plus/gk/utils/subscription.utils.ts
 +++ b/src/plus/gk/utils/subscription.utils.ts
-@@ -29,57 +29,7 @@ export function compareSubscriptionPlans(
+@@ -29,58 +29,7 @@ export function compareSubscriptionPlans(
  }
  
  export function computeSubscriptionState(subscription: Optional<Subscription, 'state'>): SubscriptionState {
@@ -38,6 +38,7 @@ index 82a75beec..266649ec2 100644
 -	if (compareSubscriptionPlans(actual.id, 'community-with-account') > 0) {
 -		return SubscriptionState.Paid;
 -	}
+-
 -	switch (effective.id) {
 -		case 'community':
 -			return SubscriptionState.Community;

@@ -14,8 +14,8 @@ index 515a8c67e..6de4ffc2d 100644
 +		data.user.firstGitLensCheckIn != null
 +			? new Date(data.user.firstGitLensCheckIn)
 +			: data.user.createdDate != null
-+			? new Date(data.user.createdDate)
-+			: undefined,
++				? new Date(data.user.createdDate)
++				: undefined,
 +		undefined,
 +		undefined,
 +		data.nextOptInDate,
