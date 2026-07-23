@@ -1,93 +1,73 @@
-# Sync Release 工作流
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Rebuild GitLens - 自动同步上游 GitLens release、应用本地补丁并打包成可安装 vsix 的 GitHub Actions 工作流">
+</p>
 
-自动同步并打包 [gitkraken/vscode-gitlens](https://github.com/gitkraken/vscode-gitlens) 最新 release 版本的工作流。
+<h1 align="center">Rebuild GitLens</h1>
 
-一个便于个人使用及测试的自动编译环境
+<p align="center">用于个人使用及测试的 GitLens 自动构建工作流</p>
 
 ---
 
-## 功能特性
+## 这是什么
 
-- 支持手动指定版本或自动获取最新版本
-- 自动检测本地是否已存在对应 tag，避免重复打包
-- 自动安装依赖并打包生成 vsix 安装包
-- 自动创建 GitHub Release，包含变更日志
+一个 GitHub Actions 工作流，自动同步 [gitkraken/vscode-gitlens](https://github.com/gitkraken/vscode-gitlens) 的最新 release，应用 `patches/` 目录下的本地补丁，构建出可直接安装的 `.vsix` 文件，并发布到本仓库的 Releases。
+
+## 工作流
+
+1. **同步上游版本** — 从 `gitkraken/vscode-gitlens` 拉取指定 tag 或最新 release
+2. **应用本地补丁** — 自动应用 `patches/*.patch`
+3. **构建扩展包** — 执行 `pnpm install` 与 `pnpm package`
+4. **发布 Release** — 上传生成的 `.vsix` 与上游 CHANGELOG
 
 ## 触发方式
 
+### 手动触发
+
+进入仓库 **Actions → Sync Release**，点击 **Run workflow**：
+
+- 输入版本号（如 `v17.8.1`）可同步指定版本
+- 留空则自动获取并同步最新 release
+
 ### 定时触发
 
-工作流默认每天凌晨 0 点自动执行，自动拉取并打包最新 release 版本。
+默认每天 UTC 0:00 自动执行：
 
 ```yaml
 schedule:
-    - cron: '0 0 * * *'
+  - cron: '0 0 * * *'
 ```
-
-### 手动触发
-
-通过 GitHub Actions 页面手动触发，可选择指定版本或使用默认的最新版本。
-
-1. 进入仓库的 **Actions** 页面
-2. 选择 **Sync Release** 工作流
-3. 点击 **Run workflow**
-4. 可选：输入版本号（如 `v17.8.1`），留空则获取最新版本
-5. 点击 **Run workflow** 按钮执行
 
 ## 输入参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
-| `version` | string | 否 | 最新版本 | 要同步的 release 版本号，格式为语义化版本号（如 `v17.8.1`）。留空则自动获取最新版本 |
-
-## 工作流程
-
-1. **版本解析** - 解析用户输入的版本号，若留空则通过 GitHub API 获取最新 release 版本
-2. **本地检测** - 检查本地仓库是否存在该版本的 tag，若存在则跳过打包流程
-3. **代码获取** - 从上游仓库 `gitkraken/vscode-gitlens` 拉取指定版本的代码
-4. **Release 信息** - 获取上游 release 的变更日志
-5. **代码检出** - 切换到指定版本的代码状态
-6. **依赖安装** - 执行 `pnpm install` 安装项目依赖
-7. **打包构建** - 执行 `pnpm package` 生成 vsix 安装包
-8. **发布 Release** - 在当前仓库创建对应版本的 GitHub Release，上传 vsix 文件
-
-## 目录结构要求
-
-```
-.
-├── .github/
-│   └── workflows/
-│       └── build.yml
-└── package.json
-```
+| `version` | string | 否 | 最新版本 | 指定 GitLens release 版本号，如 `v17.8.1` |
 
 ## 输出产物
 
-- **vsix 安装包**：位于仓库根目录，命名格式为 `gitlens-{version}.vsix`
-- **GitHub Release**：包含vsix 安装包
+- **`.vsix` 安装包**：`gitlens-{version}.vsix`
+- **GitHub Release**：包含 `.vsix` 与上游变更日志
 
-## 注意事项
+## 补丁说明
 
-1. **版本格式** - 输入的版本号必须以 `v` 开头，且为有效的语义化版本号
+`patches/` 目录下的补丁会在构建前自动应用：
 
-## 示例
+| 补丁 | 作用 |
+|------|------|
+| `fix-checkin.patch` | 调整订阅校验返回值 |
+| `fix-subscription.patch` | 调整订阅状态计算逻辑 |
 
-### 同步指定版本
+## 使用提示
 
-在 GitHub Actions 页面输入版本号：`v17.8.1`
-
-### 同步最新版本
-
-在 GitHub Actions 页面直接点击运行，不输入版本号
-
-### 查看执行结果
-
-1. 进入仓库的 **Actions** 页面
-2. 点击对应的 workflow run
-3. 查看 **Summary** 了解执行详情
-4. 在 **Releases** 页面下载生成的 vsix 文件
+- 输入版本号必须以 `v` 开头
+- 若本地已存在对应 tag，工作流会自动跳过，避免重复打包
+- 产物仅供个人使用及测试
 
 ## 相关链接
 
 - [vscode-gitlens 官方仓库](https://github.com/gitkraken/vscode-gitlens)
 - [GitLens 官网](https://www.gitkraken.com/gitlens)
+
+## License
+
+[MIT](./LICENSE)
